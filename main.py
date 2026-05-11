@@ -1,11 +1,7 @@
 import math
 from PIL import Image #beklenilen pillow library
 
-
-# görüntüyü matrise dönüştürme
-# Renkli bir bitmap görüntüsünü üç matrise (R, G, B) dönüştürmek.
 def image_to_matrices(image_path):
-    # Görüntüyü aç ve RGB modunda olduğundan emin ol
     img = Image.open(image_path).convert('RGB')
     width, height = img.size
     red_matrix = [[0 for _ in range(width)] for _ in range(height)]
@@ -22,8 +18,6 @@ def image_to_matrices(image_path):
 
     return red_matrix, green_matrix, blue_matrix, width, height
 
-# matrisi görüntüye dönüştürme
-# Amaç: RGB matrislerini tekrar görüntülenebilir/kaydedilebilir bir görsele dönüştürmek
 def matrices_to_image(r_m, g_m, b_m, width, height, output_path):
     new_img = Image.new("RGB", (width, height))
     pixels = new_img.load()
@@ -97,17 +91,36 @@ def apply_greyscale(r, g, b, w, h):
 
 
 def apply_edge_detection(r, g, b, w, h):
+    intensity = [[0] * w for _ in range(h)]
+    for y in range(h):
+        for x in range(w):
+            intensity[y][x] = int(0.299 * r[y][x] + 0.587 * g[y][x] + 0.114 * b[y][x])
+
     edge_m = [[0] * w for _ in range(h)]
+    threshold = 25
+
     for y in range(h - 1):
         for x in range(w - 1):
-            # Check brightness difference between neighbors
-            val = (r[y][x] + g[y][x] + b[y][x]) // 3
-            val_right = (r[y][x + 1] + g[y][x + 1] + b[y][x + 1]) // 3
-            val_down = (r[y + 1][x] + g[y + 1][x] + b[y + 1][x]) // 3
-            diff = abs(val - val_right) + abs(val - val_down)
-            edge_m[y][x] = 255 if diff > 30 else 0
+            diff_h = abs(intensity[y][x] - intensity[y][x + 1])
+            diff_v = abs(intensity[y][x] - intensity[y + 1][x])
+
+            if (diff_h + diff_v) > threshold:
+                edge_m[y][x] = 255
+            else:
+                edge_m[y][x] = 0
     return edge_m, edge_m, edge_m
 
+
+def apply_flip(r, g, b, w, h, mode='h'):
+    if mode == 'h':
+        nr = [row[::-1] for row in r]
+        ng = [row[::-1] for row in g]
+        nb = [row[::-1] for row in b]
+    else:
+        nr = r[::-1]
+        ng = g[::-1]
+        nb = b[::-1]
+    return nr, ng, nb
 
 def main():
     filename = input("Enter image filename: ")
@@ -117,8 +130,8 @@ def main():
         print("Could not load file.")
         return
 
-    print("\nTransformations:\n1. Rotate\n2. Scale\n3. Skew\n4. Transpose\n5. Greyscale\n6. Edge Detection")
-    choice = input("Select (1-6): ")
+    print("\nTransformations:\n1. Rotate\n2. Scale\n3. Skew\n4. Transpose\n5. Greyscale\n6. Edge Detection\n7. Flip")
+    choice = input("Select (1-7): ")
 
     if choice == '1':
         angle = float(input("Degrees: "))
@@ -135,7 +148,9 @@ def main():
         r, g, b = apply_greyscale(r, g, b, w, h)
     elif choice == '6':
         r, g, b = apply_edge_detection(r, g, b, w, h)
-
+    elif choice == '7':
+        direction: str = input("Horizontal or Vertical? (h/v): ").lower()
+        r, g, b = apply_flip(r, g, b, w, h, direction)
     matrices_to_image(r, g, b, w, h, "output.jpg")
     print("Success! Saved as 'output.jpg'")
 
