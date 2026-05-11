@@ -11,7 +11,6 @@ Unlike standard libraries that handle everything behind the scenes, this project
 * **Filters**: Convert to Greyscale or apply Edge Detection to find high-contrast boundaries.
 * **Robust CLI**: Includes input validation loops to handle typos and missing files gracefully.
 
---
 
 ## Getting Started
 
