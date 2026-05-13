@@ -115,6 +115,19 @@ def apply_flip(r, g, b, w, h, mode='h'):
         nb = b[::-1]
     return nr, ng, nb
 
+def get_valid_input(prompt, target_type):
+    while True:
+        user_input = input(prompt).strip()
+        if not user_input:
+            print("Input cannot be empty.")
+            continue
+
+        try:
+            return target_type(user_input)
+        except ValueError:
+            type_name = target_type.__name__
+            print(f"Invalid input. Please enter a valid {type_name}.")
+
 def main():
     filename = get_valid_input("Enter image filename: ", str)
     try:
