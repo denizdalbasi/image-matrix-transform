@@ -9,8 +9,8 @@ Unlike standard libraries that handle everything behind the scenes, this project
 * **Geometric Shifts**: Rotate, Scale, and Skew images with custom parameters.
 * **Structural Changes**: Transpose matrices to flip orientations.
 * **Filters**: Convert to Greyscale or apply Edge Detection to find high-contrast boundaries.
-* **Robust CLI**: Includes input validation loops to handle typos and missing files gracefully.
-
+* **Persistent Session**: A robust **while loop interface** allows you to perform multiple transformations or process different images sequentially without restarting the script.
+* **Matrix Re-rendering**: Converts modified pixel matrices back into standard image formats (e.g., `output.jpg`) using the Pillow library.
 
 ## Getting Started
 
